@@ -23,6 +23,7 @@
     "express-fileupload": "^1.4.0",
     "fs": "0.0.1-security",
     "nodemon": "^2.0.22",
+    "sequelize": "^6.30.0",
     "web3": "^1.9.0",
     "web3.storage": "^4.5.4"
   },
