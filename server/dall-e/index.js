@@ -14,7 +14,7 @@
 // lyrics end
 
 const { Configuration, OpenAIApi } = require("openai");
-
+const axios = require('axios')
 
 require('dotenv').config()
 const express = require("express");
@@ -33,16 +33,32 @@ app.use(cors());
 
 app.post("/image", async (req, res) => {
     // Get the prompt from the request
-    const { prompt } = req.body;
+    const { name,artist } = req.body;
+
+    let parsed,parsedSliced;
+
+    await axios.post("http://localhost:5000/lyrics",{
+        name:name,
+        artist:artist
+    })
+    .then((res) => {
+        parsed = JSON.stringify(res.data);
+        parsedSliced = parsed.slice(1,500);
+        console.log(parsedSliced);
+    })
+    .catch((err) => {
+        console.log(err);
+    })
 
     // Generate image from prompt
     const response = await openai.createImage({
-        prompt: prompt,
+        prompt: parsedSliced,
         n: 1,
         size: "1024x1024",
     });
     // Send back image url
     res.send(response.data.data[0].url);
+    
 });
 
 
