@@ -6,11 +6,11 @@ from google.oauth2 import service_account
 from google.cloud import speech
 from pydub import AudioSegment
 
-client_file = 'C:/Users/advai/Desktop/SpeechtoText/NFTune/server/audiototextapi/key.json'
+client_file = 'key.json'
 credentials = service_account.Credentials.from_service_account_file(client_file)
 client = speech.SpeechClient(credentials=credentials)
 
-audio_file = 'C:/Users/advai/Desktop/SpeechtoText/NFTune/server/audiototextapi/samples/1minute.wav'
+audio_file = 'samples/1minute.wav'
 
 sizecheck = audio_file.split('.')
 if sizecheck[1]== 'mp3' :
@@ -36,7 +36,7 @@ if sizecheck[1] == 'wav' :
         length = duration_seconds
 
 if length > 60.00 :
-    sound = AudioSegment.from_mp3("C:/Users/advai/Desktop/SpeechtoText/NFTune/server/audiototextapi/samples/1minute.wav")
+    sound = AudioSegment.from_mp3("samples/1minute.wav")
     #Selecting Portion we want to cut
     StrtMin = 0
     StrtSec = 0
@@ -48,9 +48,9 @@ if length > 60.00 :
     # Opening file and extracting portion of it
     extract = sound[StrtTime:EndTime]
     # Saving file in required location
-    extract.export("C:/Users/advai/Desktop/SpeechtoText/NFTune/server/audiototextapi/samples/portion.mp3", format="mp3")
+    extract.export("samples/portion.mp3", format="mp3")
 
-    trimaudio = 'C:/Users/advai/Desktop/SpeechtoText/NFTune/server/audiototextapi/samples/portion.mp3'
+    trimaudio = 'samples/portion.mp3'
 
 else :
 
@@ -91,7 +91,7 @@ else :
 
 
 response = client.recognize(config=config,audio=audio)
-print(response)
+print(response.results[0].alternatives[0].transcript)
 
 
 #output

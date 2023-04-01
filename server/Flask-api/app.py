@@ -9,6 +9,8 @@ from flask import Flask,render_template,request,session
 import requests
 from werkzeug.utils import secure_filename
 
+from pydub import AudioSegment
+from mutagen.mp3 import MP3
 
 import io
 import os
@@ -45,7 +47,6 @@ def feature_extraction(img,model):
     return flat_feature
 
 
-
 ALLOWED_EXTENSIONS = ['.aac','mp3','wav']
 
 def allowed_file(filename):
@@ -56,7 +57,7 @@ def uploadaudio():
     if(requests.method=="POST"):
         file = request.form['file']
         if(file and allowed_file(file)):
-            print("good")
+            print("good to go")
                 
             # Save the file to ./uploads
             basepath = os.path.dirname(__file__)
@@ -82,7 +83,50 @@ def uploadaudio():
 def speechtotext(filename):
     audio_file = "uploads/"+filename
 
-    extensioncheck = audio_file.split('.')
+    sizecheck = audio_file.split('.')
+
+    if sizecheck[1]== 'mp3' :
+
+        def mutagen_length(path):
+            try:
+                audio = MP3(path)
+                length = audio.info.length
+                return length
+            except:
+                return None
+
+        length = mutagen_length(audio_file)
+        print("duration sec: " + str(length))
+        print("duration min: " + str(int(length/60)) + ':' + str(int(length%60)))
+        print(type(length))
+                 
+    if sizecheck[1] == 'wav' :
+
+        with wave.open(audio_file) as mywav:
+            duration_seconds = mywav.getnframes() / mywav.getframerate()
+            print(f"Length of the WAV file: {duration_seconds:.1f} s")
+            length = duration_seconds
+
+        if length > 60.00 :
+            sound = AudioSegment.from_mp3("samples/1minute.wav")
+            #Selecting Portion we want to cut
+            StrtMin = 0
+            StrtSec = 0
+            EndMin = 0
+            EndSec = 60
+            # Time to milliseconds conversion
+            StrtTime = StrtMin*60*1000+StrtSec*1000
+            EndTime = EndMin*60*1000+EndSec*1000
+            # Opening file and extracting portion of it
+            extract = sound[StrtTime:EndTime]
+            # Saving file in required location
+            extract.export("samples/portion.mp3", format="mp3")
+
+            trimaudio = 'samples/portion.mp3'
+        else :
+            trimaudio = audio_file
+
+    extensioncheck = trimaudio.split('.')
 
     if extensioncheck[1]== 'wav' :
         with wave.open(audio_file, "rb") as wave_file:
@@ -108,13 +152,13 @@ def speechtotext(filename):
         sample_rate_hertz=frame_rate,
         language_code='en-IN')
 
-
     response = client.recognize(config=config,audio=audio)
 
-    summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
-    text_result_speechtotext = ""
+    text = response.results[0].alternatives[0].transcript
 
-    x = summarizer(text_result_speechtotext,max_length=100,min_length=1,do_sample=False)
+    summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
+
+    x = summarizer(text,max_length=100,min_length=1,do_sample=False)
     print(x)
     return x
 
