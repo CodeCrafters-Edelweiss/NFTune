@@ -9,6 +9,14 @@ import Nft from "./Nft";
 function Home() {
     return (
         <div className="">
+                <nav className="navbar navbar-container" style={{zIndex:1000}}>
+                <ul style={{listStyleType:"none"}} >
+                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >Marketplace</li>
+                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >About</li>
+                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >Resources</li>
+                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >FAQ</li>
+                </ul>
+                </nav>
             <img src={bgImage} alt="" className="bgImage" />
             <div className="container" style={{ margin: 0, padding: 0 }}>
                 <div className="row">
