@@ -1,13 +1,18 @@
 import tensorflow as tf
 import tensorflow_hub as hub
-# import PIL as Image
+from scipy.spatial import distance
 import cv2 as cv
 import numpy as np
 
+def cosine_similarity(img1,img2):
+
+    metric = 'cosine'
+    cosineDistance = distance.cdist([img1], [img2], metric)[0]
+    return cosineDistance
+
 def feature_extraction(img,model):
     img = cv.resize(img,(256,256),interpolation=cv.INTER_NEAREST)
-
-    # img = np.stack((img,)*3, axis=-1)               
+           
     img = np.array(img)/255.0                               
 
     embedding = model.predict(img[np.newaxis, ...])
@@ -25,13 +30,23 @@ model = tf.keras.Sequential([layer])
 
 # print("test-pass")
 
-img = "Images/0.jpg"
-img_copy = "Images/0_copy.jpg"
+# img = "./Images"
+# img_copy = "./Images/1.jpg"
 
-img = cv.imread(img,1);
-img_copy = cv.imread(img_copy,1)
+img = cv.imread(".\Images\0_copy.jpg",1);
+img_copy = cv.imread(".\Images\0_copy.jpg",1)
+
 
 flat_feature_img = feature_extraction(img,model)
 
+flat_feature_copy_img = feature_extraction(img_copy,model)
+
 print(flat_feature_img)
 
+print(flat_feature_copy_img)
+
+
+if(cosine_similarity(flat_feature_copy_img,flat_feature_img)<0.5):
+   print("Image is too similar with another existing NFT")
+else:
+    print("Image is good to go")
