@@ -1,0 +1,263 @@
+body {
+    background: black;
+    overflow-x: hidden;
+}
+
+.bgImage {
+    position: absolute;
+    width: 100vw;
+    height: 3892.22px;
+    left: 0;
+    top: 0;
+
+}
+
+.first-text {
+    position: absolute;
+    width: 889px;
+    height: 97px;
+    left: 40px;
+    top: 252px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 97px;
+    /* identical to box height */
+
+
+    color: #FFFFFF;
+}
+
+.second-text {
+    position: absolute;
+    width: 653px;
+    height: 77px;
+    left: 39px;
+    top: 349px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 77px;
+
+    color: #FFFFFF;
+}
+
+.first-small-text {
+    position: absolute;
+    width: 670px;
+    height: 78px;
+    left: 40px;
+    top: 454px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 160%;
+    /* or 26px */
+
+
+    color: #FFFFFF;
+
+}
+
+.border-container {
+    position: relative;
+    width: 100vw;
+    height: 0px;
+    left: 0px;
+    top: 76px;
+
+    border: 1px solid #FFFFFF;
+}
+
+.second-image {
+    position: absolute;
+    width: 568px;
+    height: 568px;
+    left: 720px;
+    top: 981px;
+}
+
+.container2-text1 {
+    position: absolute;
+    width: 684px;
+    height: 194px;
+    left: 40px;
+    top: 1014px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 97px;
+
+    color: #FFFFFF;
+
+}
+
+.container2-small1 {
+    position: absolute;
+    width: 608px;
+    height: 116px;
+    left: 40px;
+    top: 1244px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 160%;
+    /* or 29px */
+
+
+    color: #FFFFFF;
+}
+
+.thirdImage {
+    position: absolute;
+    width: 938px;
+    height: 655px;
+    left: 350px;
+    top: 1730px;
+
+}
+
+.container3-text1 {
+    position: absolute;
+    width: 620px;
+    height: 194px;
+    left: 1000px;
+    top: 1313px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 97px;
+
+    color: #FFFFFF;
+}
+
+.container3-small1 {
+    position: absolute;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 160%;
+    left: 1000px;
+    /* top: 100px; */
+    /* or 29px */
+    width: 608px;
+    height: 145px;
+    color: #FFFFFF;
+}
+
+.container4-text1 {
+    position: absolute;
+    width: 554px;
+    height: 194px;
+    left: 15vw;
+    top: 3323px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 97px;
+
+    color: #FFFFFF;
+
+}
+
+/* nft individual */
+.nft-container {
+    width: 402.58px;
+    height: 489px;
+    margin-right: 10vw;
+    margin-top: 10vh;
+    /* border: 1px solid white; */
+}
+
+.nft-image {
+    left: 10.87%;
+    right: 0%;
+    top: 0%;
+    bottom: 40.49%;
+}
+
+.nft-svg {
+    left: -12%;
+    right: -7.75%;
+    top: -54.06%;
+    bottom: 0%;
+    position: relative;
+}
+
+.nft-name {
+    left: 0%;
+    /* right: 57.29%; */
+    top: -88.89%;
+    position: relative;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 23.9686px;
+    line-height: 29px;
+    /* identical to box height */
+
+    color: #FFFFFF;
+
+}
+
+
+.nft-play-btn {
+    border: 1.09396px solid #FFFFFF;
+    border-radius: 54.698px;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10.9396px 21.8792px;
+    gap: 6.56px;
+    background: black;
+}
+
+.nft-buy-btn {
+    border: none;
+    border-radius: 54.698px;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10.9396px 21.8792px;
+    gap: 6.56px;
+    background: linear-gradient(99.74deg, #06DBAC 5.23%, #BD00FF 92.7%);
+
+}
+
+.nft-buy-btn:hover {
+    transition: .5s;
+    transition-timing-function: ease-in;
+    background: linear-gradient(99.74deg, #BD00FF 5.23%, #06DBAC 92.7%);
+}
+
+.nft-buy-text {
+    /* font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16.6913px; */
+    /* line-height: 160%; */
+    /* identical to box height, or 32px */
+
+    color: #FFFFFF;
+
+}
+
+/* nft individual */
