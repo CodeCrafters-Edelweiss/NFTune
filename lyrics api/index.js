@@ -1,6 +1,10 @@
-// import { getLyrics, getSong } from 'genius-lyrics-api';
-// // const getLyrics = require("genius-lyrics-api");
-// // const getSong = require("genius-lyrics-api");
+import { getLyrics, getSong } from 'genius-lyrics-api';
+import express from 'express';
+import cors from 'cors';
+// const bodyParser = require("body-parser");
+import bodyParser from 'body-parser';
+
+
 // const options = {
 // 	apiKey: 'q_IlWsdCAon3oOGsyRD9NVsGcs5EGCCWHGiModJTavI4QqwbrEaLrJeanIKWBZ3s',
 // 	title: 'Bad Liar',
@@ -8,45 +12,29 @@
 // 	optimizeQuery: true
 // };
 
-// getLyrics(options).then((lyrics) => console.log(lyrics));
+let lyricsReceived;
 
-
-// lyrics end
-
-const { Configuration, OpenAIApi } = require("openai");
-
-
-require('dotenv').config()
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-
-
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+// getLyrics(options).then((lyrics) => lyricsReceived = lyrics);
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.post("/image", async (req, res) => {
-    // Get the prompt from the request
-    const { prompt } = req.body;
+app.post("/lyrics", async (req, res) => {
+	const {name,artist} = req.body;
 
-    // Generate image from prompt
-    const response = await openai.createImage({
-        prompt: prompt,
-        n: 1,
-        size: "1024x1024",
-    });
-    // Send back image url
-    res.send(response.data.data[0].url);
-});
+	const options = {
+		apiKey: 'q_IlWsdCAon3oOGsyRD9NVsGcs5EGCCWHGiModJTavI4QqwbrEaLrJeanIKWBZ3s',
+		title: name,
+		artist: artist,
+		optimizeQuery: true
+	};
 
+	getLyrics(options).then((lyrics) => lyricsReceived = lyrics);
+	console.log(lyricsReceived);
+	res.send(lyricsReceived);
+})
 
-const port = 8080;
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
+app.listen(5000, ()=>{
+	console.log("Listening on port 5000");
+})
