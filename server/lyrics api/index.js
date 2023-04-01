@@ -30,9 +30,11 @@ app.post("/lyrics", async (req, res) => {
 		optimizeQuery: true
 	};
 
-	getLyrics(options).then((lyrics) => lyricsReceived = lyrics);
-	console.log(lyricsReceived);
-	res.send(lyricsReceived);
+	getLyrics(options).then((lyrics) => {
+		console.log(lyrics);
+		res.send(lyrics.slice(5));
+	});
+
 })
 
 app.listen(5000, ()=>{
