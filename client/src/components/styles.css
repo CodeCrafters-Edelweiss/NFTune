@@ -12,6 +12,27 @@ body {
 
 }
 
+.navbar-container {
+    height: 75px;
+    width: 100vw;
+    position: fixed;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    justify-content: center;
+    text-align: center;
+}
+
+li {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+    margin: 0vw 2vw;
+    font-family: 'Inter';
+}
+
+
 .first-text {
     position: absolute;
     width: 889px;
@@ -205,11 +226,11 @@ body {
     position: relative;
     font-family: 'Inter';
     font-style: normal;
-    font-weight: 600;
+    font-weight: 300;
     font-size: 23.9686px;
     line-height: 29px;
     /* identical to box height */
-
+    
     color: #FFFFFF;
 
 }
@@ -243,8 +264,8 @@ body {
 }
 
 .nft-buy-btn:hover {
-    transition: .5s;
-    transition-timing-function: ease-in;
+    /* transition: .5s; */
+    /* transition-timing-function: ease-in; */
     background: linear-gradient(99.74deg, #BD00FF 5.23%, #06DBAC 92.7%);
 }
 

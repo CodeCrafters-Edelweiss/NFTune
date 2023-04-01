@@ -27,7 +27,7 @@ function Nft() {
                         <div
                             className="col-lg-6"
                         >
-                            <h5 style={{ color: "white"}}>
+                            <h5 style={{ color: "white",fontFamily:"Inter"}}>
                             <svg
                                 width="20"
                                 height="17"
@@ -45,7 +45,7 @@ function Nft() {
                             0.3234</h5>
                         </div>
                         <div className="col-lg-6">
-                            <h5 style={{ color: "white"}}>16 Tokens</h5>
+                            <h5 style={{ color: "white",fontFamily:"Inter"}}>16 Tokens</h5>
                         </div>
                     </div>
                 </div>
