@@ -1,7 +1,6 @@
 from transformers import pipeline
 
-summarizer = pipeline('summarization')
-
+summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
 article = """
 Entrepreneurship is the ability and readiness to develop, organize and run a business enterprise, along with any of its uncertainties in order to make a profit. The most prominent example of entrepreneurship is the starting of new businesses.
 In economics, entrepreneurship connected with land, labour, natural resources and capital can generate a profit. The entrepreneurial vision is defined by discovery and risk-taking and is an indispensable part of a nation’s capacity to succeed in an ever-changing and more competitive global marketplace.
