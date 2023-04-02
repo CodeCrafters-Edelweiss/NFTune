@@ -32,6 +32,12 @@ li {
     font-family: 'Inter';
 }
 
+a:hover {
+    transition: all 0.8s ease-in-out;
+    background: -webkit-linear-gradient(#575757, #575757);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 .first-text {
     position: absolute;
@@ -230,7 +236,7 @@ li {
     font-size: 23.9686px;
     line-height: 29px;
     /* identical to box height */
-    
+
     color: #FFFFFF;
 
 }

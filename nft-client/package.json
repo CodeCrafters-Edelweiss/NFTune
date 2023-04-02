@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.15",
+    "@mui/styled-engine-sc": "^5.11.11",
+    "@openzeppelin/contracts": "^4.2.0",
+    "@truffle/hdwallet-provider": "^1.4.2",
+    "@types/chai": "^4.2.21",
+    "chai": "^4.3.4",
+    "chai-as-promised": "7.1.1",
+    "ganache": "^7.7.7",
+    "ganache-cli": "^6.12.2",
+    "install": "^0.13.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.3",
+    "styled-components": "^5.3.9",
+    "truffle": "^5.4.0"
+  }
+}

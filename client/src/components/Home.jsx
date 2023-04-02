@@ -1,5 +1,6 @@
 import React from "react";
 import "./styles.css";
+import { Link } from "react-router-dom";
 import first from "../assets/first.png";
 import second from "../assets/second.png";
 import third from "../assets/third.png";
@@ -11,7 +12,7 @@ function Home() {
         <div className="">
                 <nav className="navbar navbar-container" style={{zIndex:1000}}>
                 <ul style={{listStyleType:"none"}} >
-                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >Marketplace</li>
+                    <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} > <a href="/marketplace" style={{textDecoration: "none",color:"white"}}  >Marketplace</a></li>
                     <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >About</li>
                     <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >Resources</li>
                     <li className="navbar-link1" style={{float:"left",color:"white",fontSize:"16px",fontWeight:"400",textTransform:"uppercase",zIndex:"1000"}} >FAQ</li>
