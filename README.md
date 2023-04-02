@@ -1,2 +1,2 @@
 # NFTune
-This project converts an audio to images and then converts them into NFTs.
+Revolutionize your music, own your NFTs, trade your art
