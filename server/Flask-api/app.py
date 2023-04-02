@@ -5,10 +5,12 @@ import cv2 as cv
 import numpy as np
 
 from transformers import pipeline
-from flask import Flask,render_template,request,session
+from flask import Flask,render_template,request,jsonify
 import requests
 from werkzeug.utils import secure_filename
 
+from pydub import AudioSegment
+from mutagen.mp3 import MP3
 
 import io
 import os
@@ -18,13 +20,18 @@ from google.oauth2 import service_account
 from google.cloud import speech
 
 
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 app = Flask(__name__)
 cors = CORS(app, resources={r"/YOURAPP/*": {"origins": "*"}})
 
 client_file = 'key.json'
 credentials = service_account.Credentials.from_service_account_file(client_file)
 client = speech.SpeechClient(credentials=credentials)
+
+UPLOAD_FOLDER=r'Uploads'
+app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH']=16*1024*1024
+
 
 
 def cosine_similarity(img1,img2):
@@ -45,78 +52,133 @@ def feature_extraction(img,model):
     return flat_feature
 
 
-
-ALLOWED_EXTENSIONS = ['.aac','mp3','wav']
+ALLOWED_EXTENSIONS = ['.aac','.mp3','.wav']
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/uploadaudio',methods=['POST'])
+@app.route('/uploadaudio',methods=['POST','GET'])
 def uploadaudio():
-    if(requests.method=="POST"):
-        file = request.form['file']
-        if(file and allowed_file(file)):
-            print("good")
-                
-            # Save the file to ./uploads
-            basepath = os.path.dirname(__file__)
-            file_path = os.path.join(
-                basepath, 'uploads', secure_filename(file.filename))
-            file.save(file_path)
+    if(request.method=="POST"):
+        print("hello")
+        f = request.files['file']
+        print("hi")
+        print(f.filename)
+        print("good to go")
+        print(allowed_file(f.filename))
+        # Save the file to ./uploads
+        filename=secure_filename( f.filename )
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-            get_path = "http://localhost:6000/speechtotext/{file}"
-            
-            text_get_response = requests.get(get_path)
+        get_path = "http://localhost:5000/speechtotext/"+filename
+        
+        text_get_response = requests.get(get_path)
 
-            print(text_get_response)
+        text_get_response = text_get_response.json()
 
-            return text_get_response
-        else:
-            return 0
+        # exit()
+        return jsonify(text_get_response)
+
+        # else:
+        #     return "hi"
     else:
-        return 0
+        return render_template('test.html')
 
 
 #passing the path to the api
 @app.route('/speechtotext/<path:filename>')
 def speechtotext(filename):
+    
     audio_file = "uploads/"+filename
 
-    extensioncheck = audio_file.split('.')
+    sizecheck = audio_file.split('.')
+    print(sizecheck)
 
-    if extensioncheck[1]== 'wav' :
-        with wave.open(audio_file, "rb") as wave_file:
-            frame_rate = wave_file.getframerate()
-    else:
-        frame_rate = 24000
+    if sizecheck[1]== 'mp3' :
 
-    with io.open(audio_file,'rb') as f:
+        def mutagen_length(path):
+            try:
+                audio = MP3(path)
+                length = audio.info.length
+                return length
+            except:
+                return None
+
+        length = mutagen_length(audio_file)
+        print("duration sec: " + str(length))
+        print("duration min: " + str(int(length/60)) + ':' + str(int(length%60)))
+        print(type(length))
+                 
+    if sizecheck[1] == 'wav' :
+
+        with wave.open(audio_file) as mywav:
+            duration_seconds = mywav.getnframes() / mywav.getframerate()
+            print(f"Length of the WAV file: {duration_seconds:.1f} s")
+            length = duration_seconds
+
+    if length > 60.00 :
+        sound = AudioSegment.from_mp3(audio_file)
+        #Selecting Portion we want to cut
+        StrtMin = 0
+        StrtSec = 0
+        EndMin = 0
+        EndSec = 60
+        # Time to milliseconds conversion
+        StrtTime = StrtMin*60*1000+StrtSec*1000
+        EndTime = EndMin*60*1000+EndSec*1000
+        # Opening file and extracting portion of it
+        extract = sound[StrtTime:EndTime]
+        # Saving file in required location
+        extract.export("export/portion.mp3", format="mp3")
+
+        trimaudio = 'export/portion.mp3'
+    else :
+        trimaudio = audio_file
+
+    extensioncheck = trimaudio.split('.')
+    print(extensioncheck)
+
+    # if extensioncheck[1]== 'wav' :
+    #     with wave.open(audio_file, "rb") as wave_file:
+    #         frame_rate = wave_file.getframerate()
+    # else:
+    #     frame_rate = 24000
+
+    with io.open(trimaudio,'rb') as f:
         content = f.read()
         audio = speech.RecognitionAudio(content=content)
 
 
-    if extensioncheck[1] == 'wav':
+    # if extensioncheck[1] == 'wav':
 
-        config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=frame_rate,
-        language_code='en-IN'
-        )
-    else :
-        config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.ENCODING_UNSPECIFIED,
-        sample_rate_hertz=frame_rate,
-        language_code='en-IN')
-
+    #     config = speech.RecognitionConfig(
+    #     encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+    #     sample_rate_hertz=frame_rate,
+    #     language_code='en-IN'
+    #     )
+    # else :
+    config = speech.RecognitionConfig(
+    encoding=speech.RecognitionConfig.AudioEncoding.ENCODING_UNSPECIFIED,
+    sample_rate_hertz=24000,
+    language_code='en-IN')
 
     response = client.recognize(config=config,audio=audio)
 
-    summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
-    text_result_speechtotext = ""
+    text = response.results[0].alternatives[0].transcript
+    
 
-    x = summarizer(text_result_speechtotext,max_length=100,min_length=1,do_sample=False)
+
+    # summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
+    summarizer = pipeline("summarization",model="t5-small")
+
+    x = summarizer(text,max_length=30,min_length=1,do_sample=False)
     print(x)
-    return x
+    # [{'summary_text': 'deep learning deep learning is a branch of machine learning which is completely based on artificial neural network as neural network is going to mimic the human'}]
+    print(x[0]['summary_text'])
+    data = {
+        "text":x[0]['summary_text']
+    }
+    return jsonify(data)
 
 @app.route('/imagesimilarity')
 def imagesimilarity():
@@ -149,4 +211,4 @@ def imagesimilarity():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,port=6000)
+    app.run(debug=True)
