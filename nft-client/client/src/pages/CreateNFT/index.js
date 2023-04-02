@@ -152,7 +152,7 @@ const CreateNFT = () => {
 
 
         await toDataURL(url)
-          .then(dataUrl => {
+          .then(async(dataUrl) => {
             console.log('Here is Base64 Url', dataUrl)
             var fileData = dataURLtoFile(dataUrl, "imageName.jpg");
             // console.log("Here is JavaScript File Object", fileData)
@@ -160,11 +160,9 @@ const CreateNFT = () => {
             console.log(fileData);
             console.log(`===================================`)
             setSelectedFile(fileData);
+            console.log("selectedFile: ", selectedFile);
             data.append("img", fileData);
-          })
-
-          console.log("selectedFile: ", selectedFile);
-
+            
         try {
           const totalSupply = await artTokenContract.methods.totalSupply().call();
           data.append("tokenId", Number(totalSupply) + 1);
@@ -180,6 +178,9 @@ const CreateNFT = () => {
         } catch (error) {
           console.log(error);
         }
+          })
+
+
       })
       .catch((err) => {
         console.log(err);

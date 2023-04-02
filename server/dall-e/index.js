@@ -37,7 +37,7 @@ app.post("/image", async (req, res) => {
 
     let parsed,parsedSliced;
 
-    await axios.post("http://localhost:5000/lyrics",{
+    await axios.post("http://localhost:5500/lyrics",{
         name:name,
         artist:artist
     })

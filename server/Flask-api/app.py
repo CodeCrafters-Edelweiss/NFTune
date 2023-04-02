@@ -42,7 +42,7 @@ def cosine_similarity(img1,img2):
 
 def feature_extraction(img,model):
     img = cv.resize(img,(256,256),interpolation=cv.INTER_NEAREST)
-           
+        
     img = np.array(img)/255.0                               
 
     embedding = model.predict(img[np.newaxis, ...])
