@@ -1,5 +1,5 @@
 import express from "express";
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3500;
 import bodyParser from "body-parser";
 import upload_file from "./routes/uploadfile.js";
 import nft from "./routes/nft.js";

@@ -52,7 +52,7 @@ def feature_extraction(img,model):
     return flat_feature
 
 
-ALLOWED_EXTENSIONS = ['.aac','.mp3','.wav']
+ALLOWED_EXTENSIONS = ['mp3','wav']
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
@@ -65,25 +65,74 @@ def uploadaudio():
         print("hi")
         print(f.filename)
         print("good to go")
-        print(allowed_file(f.filename))
-        # Save the file to ./uploads
-        filename=secure_filename( f.filename )
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+        if(f and allowed_file(f.filename)):
+            filename=secure_filename( f.filename )
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-        get_path = "http://localhost:5000/speechtotext/"+filename
-        
-        text_get_response = requests.get(get_path)
 
-        text_get_response = text_get_response.json()
+            get_path = "http://localhost:5000/speechtotext/"+filename
+            
+            text_get_response = requests.get(get_path)
 
-        # exit()
-        return jsonify(text_get_response)
+            text_get_response = text_get_response.json()
 
-        # else:
-        #     return "hi"
+            return jsonify(text_get_response)
+        else:
+            print("Please check the file extension")
+            data = {"text":None}
+            return jsonify(data)
     else:
         return render_template('test.html')
 
+
+@app.route('/image/similarity/<path:url>')
+def imagesimilarity(url):
+    if(request.method == "GET"):
+        print("hi")
+        model_url = "https://tfhub.dev/tensorflow/efficientnet/lite0/feature-vector/2"
+
+        IMAGE_SHAPE = (256,256,3)
+
+        layer = hub.KerasLayer(model_url, input_shape=IMAGE_SHAPE)
+        model = tf.keras.Sequential([layer])
+
+        resp = requests.get(url, stream=True).raw
+        image = np.asarray(bytearray(resp.read()), dtype="uint8")
+        image = cv.imdecode(image, cv.IMREAD_COLOR)
+
+        flat_feature_img = feature_extraction(image,model)
+
+
+        #TODO: Do the query in all the images in the database to check the
+
+        # get_path = "images.txt"
+        text_get_response = requests.get("http:localhost:3500/file/upload") 
+
+        print("hi")
+
+        file=open(text_get_response,"r")
+        url_list = file.readlines()
+        file.close()
+
+
+        for url_ipfs in url_list:
+            resp = requests.get(url_ipfs, stream=True).raw
+            url_image = np.asarray(bytearray(resp.read()), dtype="uint8")
+            url_image = cv.imdecode(image, cv.IMREAD_COLOR)
+            
+            flat_feature_url_img = feature_extraction(url_image,model)
+
+            if(cosine_similarity(flat_feature_url_img,flat_feature_img)<0.05):
+                data = {
+                "response":False
+                }
+                return jsonify(data)
+       
+        data = {
+            "response":True
+        }
+        return jsonify(data)
+    
 
 #passing the path to the api
 @app.route('/speechtotext/<path:filename>')
@@ -138,25 +187,11 @@ def speechtotext(filename):
     extensioncheck = trimaudio.split('.')
     print(extensioncheck)
 
-    # if extensioncheck[1]== 'wav' :
-    #     with wave.open(audio_file, "rb") as wave_file:
-    #         frame_rate = wave_file.getframerate()
-    # else:
-    #     frame_rate = 24000
 
     with io.open(trimaudio,'rb') as f:
         content = f.read()
         audio = speech.RecognitionAudio(content=content)
 
-
-    # if extensioncheck[1] == 'wav':
-
-    #     config = speech.RecognitionConfig(
-    #     encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-    #     sample_rate_hertz=frame_rate,
-    #     language_code='en-IN'
-    #     )
-    # else :
     config = speech.RecognitionConfig(
     encoding=speech.RecognitionConfig.AudioEncoding.ENCODING_UNSPECIFIED,
     sample_rate_hertz=24000,
@@ -165,8 +200,6 @@ def speechtotext(filename):
     response = client.recognize(config=config,audio=audio)
 
     text = response.results[0].alternatives[0].transcript
-    
-
 
     # summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="tf")
     summarizer = pipeline("summarization",model="t5-small")
@@ -179,35 +212,6 @@ def speechtotext(filename):
         "text":x[0]['summary_text']
     }
     return jsonify(data)
-
-@app.route('/imagesimilarity')
-def imagesimilarity():
-    model_url = "https://tfhub.dev/tensorflow/efficientnet/lite0/feature-vector/2"
-
-    IMAGE_SHAPE = (256,256,3)
-
-    layer = hub.KerasLayer(model_url, input_shape=IMAGE_SHAPE)
-    model = tf.keras.Sequential([layer])
-
-    url = ""
-
-    resp = requests.get(url, stream=True).raw
-    image = np.asarray(bytearray(resp.read()), dtype="uint8")
-    image = cv.imdecode(image, cv.IMREAD_COLOR)
-
-    print(image)
-
-
-    flat_feature_img = feature_extraction(image,model)
-
-    #TODO: Do the query in all the images in the database to check the 
-
-    flat_feature_copy_img = "" # query on the images
-
-    if(cosine_similarity(flat_feature_copy_img,flat_feature_img)<0.5):
-        return 1
-    else:
-        return 0
 
 
 if __name__ == "__main__":
