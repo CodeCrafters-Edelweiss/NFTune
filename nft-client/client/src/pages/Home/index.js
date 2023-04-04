@@ -160,7 +160,7 @@ const Main = () => {
           justifyContent="center"
           alignItems="center"
           spacing={2}
-          style={{top:"80vh",position:"relative"}}
+          style={{top:"80vh",position:"relative",left:"10vw"}}
         >
           {nftItem.map((nft) => (
             <Grid item key={nft.tokenId}>

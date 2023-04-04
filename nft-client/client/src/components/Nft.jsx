@@ -53,7 +53,7 @@ const Nft = ({ tokenId, name, image, price, owner, isForSale }) => {
                 <div className="container" style={{top:"-82.89%",position:"relative"}}>
                     <div className="row">
                         <div className="col-lg-6">
-                            <button className="btn btn-secondary nft-play-btn">Play Now <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <button className="btn btn-secondary nft-play-btn" disabled>Play Now <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.40381 2.90942L18.1667 11.1141L5.40381 19.3188V2.90942Z" stroke="white" stroke-width="2.18792" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 </button>

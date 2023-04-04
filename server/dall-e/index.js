@@ -61,6 +61,18 @@ app.post("/image", async (req, res) => {
     
 });
 
+app.post("/image/audio",async(req,res) => {
+    const {prompt} = req.body;
+
+    const response = await openai.createImage({
+        prompt: prompt,
+        n:1,
+        size:"1024x1024",
+    });
+
+    res.send(response.data.data[0].url);
+})
+
 
 const port = 8080;
 app.listen(port, () => {

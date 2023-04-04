@@ -3,7 +3,7 @@ import tensorflow_hub as hub
 from scipy.spatial import distance
 import cv2 as cv
 import numpy as np
-
+import json
 from transformers import pipeline
 from flask import Flask,render_template,request,jsonify
 import requests
@@ -42,7 +42,7 @@ def cosine_similarity(img1,img2):
 
 def feature_extraction(img,model):
     img = cv.resize(img,(256,256),interpolation=cv.INTER_NEAREST)
-        
+           
     img = np.array(img)/255.0                               
 
     embedding = model.predict(img[np.newaxis, ...])
@@ -61,6 +61,8 @@ def allowed_file(filename):
 def uploadaudio():
     if(request.method=="POST"):
         print("hello")
+        print(request)
+        print(request.files['file'].filename)
         f = request.files['file']
         print("hi")
         print(f.filename)
@@ -69,14 +71,15 @@ def uploadaudio():
             filename=secure_filename( f.filename )
             f.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
-
             get_path = "http://localhost:5000/speechtotext/"+filename
             
             text_get_response = requests.get(get_path)
 
             text_get_response = text_get_response.json()
 
-            return jsonify(text_get_response)
+            data = {"text": text_get_response}
+
+            return json.dumps(data)
         else:
             print("Please check the file extension")
             data = {"text":None}

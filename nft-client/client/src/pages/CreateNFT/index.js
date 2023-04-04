@@ -28,14 +28,110 @@ const CreateNFT = () => {
 
   const [selectedFile, setSelectedFile] = useState();
   console.log(selectedFile);
-  console.log(`soemthing`)
+  console.log(`something`)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
   });
 
+  const [form,setForm] = useState(undefined);
 
+  const onAudioFileUpload = (event) => {
+    var formData = new FormData();
+    setSelectedFile(event);
+    console.log(event);
+    formData.append("file", selectedFile);
+    setForm(formData);
+  }
+
+  const [prompt,setPrompt] = useState("");
+
+  const onAudioFileSubmit = async (event) => {
+    event.preventDefault();
+    await axios.post("http://127.0.0.1:5000/uploadaudio", form)
+    .then(async(response) => {
+      console.log(response.data.text.text);
+      await setPrompt(response.data.text.text);
+      console.log(typeof prompt);
+
+      await axios.post("http://localhost:8080/image/audio",{
+        prompt:prompt
+      })
+      .then(async (res) => {
+        console.log(res.data);
+        setLyricImage(res.data);
+        setSelectedFile(res.data);
+        const data = new FormData();
+        data.append("name", name);
+        data.append("description", artist);
+
+        let url = res.data;
+        const toDataURL = url => fetch(url)
+          .then(response => response.blob())
+          .then(blob => new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result)
+            reader.onerror = reject
+            reader.readAsDataURL(blob)
+          }))
+
+
+
+        function dataURLtoFile(dataurl, filename) {
+          var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          return new File([u8arr], filename, { type: mime });
+        }
+
+
+        await toDataURL(url)
+          .then(async (dataUrl) => {
+            console.log('Here is Base64 Url', dataUrl)
+            var fileData = dataURLtoFile(dataUrl, "imageName.jpg");
+            // console.log("Here is JavaScript File Object", fileData)
+            //  fileArr.push(fileData)
+            console.log(fileData);
+            console.log(`===================================`)
+            setSelectedFile(fileData);
+            console.log("selectedFile: ", selectedFile);
+            data.append("img", fileData);
+
+            try {
+              const totalSupply = await artTokenContract.methods.totalSupply().call();
+              data.append("tokenId", Number(totalSupply) + 1);
+
+              const response = await api.post("/tokens", data, {
+                headers: {
+                  "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+                },
+              });
+              console.log(response);
+
+              mint(response.data.message);
+            } catch (error) {
+              console.log(error);
+            }
+          })
+
+
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+
+    })
+      .catch((error) => {
+        console.log(error);
+      })
+
+
+
+  
+  }
 
 
 
@@ -59,7 +155,7 @@ const CreateNFT = () => {
 
     if (selectedFile) {
       data.append("img", selectedFile);
-      console.log("slectedFile: ", selectedFile);
+      console.log("selectedFile: ", selectedFile);
     }
 
     try {
@@ -113,6 +209,7 @@ const CreateNFT = () => {
 
   const [name, setName] = useState("");
   const [artist, setArtist] = useState("");
+
   const [lyricImage, setLyricImage] = useState(undefined);
 
   const getImageLyric = async () => {
@@ -152,7 +249,7 @@ const CreateNFT = () => {
 
 
         await toDataURL(url)
-          .then(async(dataUrl) => {
+          .then(async (dataUrl) => {
             console.log('Here is Base64 Url', dataUrl)
             var fileData = dataURLtoFile(dataUrl, "imageName.jpg");
             // console.log("Here is JavaScript File Object", fileData)
@@ -162,22 +259,22 @@ const CreateNFT = () => {
             setSelectedFile(fileData);
             console.log("selectedFile: ", selectedFile);
             data.append("img", fileData);
-            
-        try {
-          const totalSupply = await artTokenContract.methods.totalSupply().call();
-          data.append("tokenId", Number(totalSupply) + 1);
 
-          const response = await api.post("/tokens", data, {
-            headers: {
-              "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
-            },
-          });
-          console.log(response);
+            try {
+              const totalSupply = await artTokenContract.methods.totalSupply().call();
+              data.append("tokenId", Number(totalSupply) + 1);
 
-          mint(response.data.message);
-        } catch (error) {
-          console.log(error);
-        }
+              const response = await api.post("/tokens", data, {
+                headers: {
+                  "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+                },
+              });
+              console.log(response);
+
+              mint(response.data.message);
+            } catch (error) {
+              console.log(error);
+            }
           })
 
 
@@ -242,12 +339,11 @@ const CreateNFT = () => {
                   id=""
                   placeholder="Artist"
                 />
-                <h5>OR</h5>
-                <DropZone onFileUploaded={setSelectedFile} />
+                <DropZone onFileUploaded={onAudioFileUpload} />
                 {/* <button className="loginButton btn btn-success" onClick={createNFT}>Generate</button> */}
                 <button
                   className="loginButton btn btn-success"
-                  type="submit" >
+                  type="submit" onClick={onAudioFileSubmit} >
                   Submit
                 </button>
               </div>
@@ -281,42 +377,6 @@ const CreateNFT = () => {
               </div>
             }
           </div>
-          {/* <TextField
-              label="Title"
-              name="title"
-              variant="filled"
-              required
-              value={formData.title}
-              onChange={handleInputChange}
-              fullWidth
-            />
-            <TextField
-              id="outlined-multiline-static"
-              multiline
-              rows={4}
-              label="Description"
-              name="description"
-              variant="filled"
-              required
-              value={formData.description}
-              onChange={handleInputChange}
-              fullWidth
-            />
-            <TextField
-              label="price"
-              name="price"
-              variant="filled"
-              value={formData.price}
-              onChange={handleInputChange}
-              InputProps={{
-                startAdornment: <InputAdornment position="start">ETH</InputAdornment>,
-              }}
-              fullWidth
-            /> */}
-
-          {/* <Button variant="contained" color="primary" type="submit">
-            Submit
-          </Button> */}
         </div>
       </form>
     </div>

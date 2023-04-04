@@ -11,7 +11,7 @@ const DropZone = ({ onFileUploaded })  => {
 
   const onDrop = useCallback(acceptedFiles => {
     const file = acceptedFiles[0];
-     
+    
     const fileUrl = URL.createObjectURL(file);
     
     setSelectedFileUrl(fileUrl);
@@ -20,19 +20,19 @@ const DropZone = ({ onFileUploaded })  => {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop, 
-    accept: 'image/*'
+    accept: 'audio/*'
   });
 
   return (
     <div className={classes.dropzone} {...getRootProps()}>
-      <input {...getInputProps()} accept='image/*' />
+      <input {...getInputProps()} accept='audio/*' />
 
       { selectedFileUrl 
-        ? <img src={selectedFileUrl} alt="Point thumbnail"/>
+        ? <audio controls src={selectedFileUrl} />
         : (
           <p>
             <CloudUploadIcon />
-            NFT image
+            NFT audio
           </p>
         )
       }
